@@ -1,0 +1,117 @@
+---
+title: "Interactive mode"
+description: "Step through each outdated app one at a time and decide individually whether to upgrade, skip, or pin it."
+---
+
+Interactive mode lets you review and act on each outdated app separately instead of upgrading everything at once. For each app you can upgrade it, skip it, or pin it to prevent future prompts.
+
+## Activating interactive mode
+
+<Steps>
+  <Step title="Run brew cu">
+    Start the normal upgrade flow:
+
+    ```bash
+    brew cu
+    ```
+
+    `brew cu` scans for outdated apps and prints the results table.
+  </Step>
+
+  <Step title="Enter interactive mode">
+    When the main prompt appears, type `i` and press Enter:
+
+    ```
+    Do you want to upgrade 3 apps or enter [i]nteractive mode [y/i/N]? i
+    ```
+
+    Alternatively, pass the `-i` or `--interactive` flag upfront to go straight into interactive mode without being asked:
+
+    ```bash
+    brew cu --interactive
+    brew cu -i
+    ```
+  </Step>
+
+  <Step title="Respond to each app prompt">
+    `brew cu` steps through every outdated app one at a time and asks:
+
+    ```
+    Do you want to upgrade "firefox", [p]in it to exclude it from updates or [q]uit [y/p/q/N]?
+    ```
+
+    Respond with one of the options below.
+  </Step>
+
+  <Step title="Upgrades run after all prompts">
+    After you have responded to every app, all apps you answered `y` for are upgraded together. Apps you skipped or pinned are left untouched.
+  </Step>
+</Steps>
+
+## Per-app options
+
+| Input | Action |
+|-------|--------|
+| `y` | Upgrade this app |
+| `p` | Pin this app at its current version — it will not appear in future `brew cu` runs until unpinned |
+| `q` | Quit interactive mode immediately, without upgrading any remaining apps |
+| `N` (or any other key) | Skip this app for now |
+
+<Warning>
+  Pinning is not supported for Mac App Store apps. If you press `p` for a MAS app, `brew cu` prints an error and moves on without pinning.
+</Warning>
+
+To unpin an app later, use:
+
+```bash
+brew cu unpin <cask>
+```
+
+## Cleanup in interactive mode
+
+`--cleanup` is silently skipped in interactive mode. Because you may choose not to upgrade every app in the list, `brew cu` cannot know in advance whether a full cleanup is appropriate. Only apps that are actually upgraded have their old versions removed.
+
+<Warning>
+  If you need post-upgrade cleanup when using interactive mode, run `brew cleanup` manually after `brew cu` finishes.
+</Warning>
+
+## Example session
+
+The following shows a realistic interactive session with three outdated apps:
+
+```
+==> Options
+Include auto-update (-a): false
+Include latest (-f): false
+
+==> Updating Homebrew
+Already up-to-date.
+
+==> Finding outdated apps
+
+Cask                   Current     Latest      Result
+--------------------   ---------   ---------   --------
+firefox                120.0       121.0       outdated
+rectangle              0.64        0.65        outdated
+visual-studio-code     1.84.2      1.85.1      outdated
+
+==> Found outdated apps
+
+Do you want to upgrade 3 apps or enter [i]nteractive mode [y/i/N]? i
+
+Do you want to upgrade "firefox", [p]in it to exclude it from updates or [q]uit [y/p/q/N]? y
+Do you want to upgrade "rectangle", [p]in it to exclude it from updates or [q]uit [y/p/q/N]? p
+Do you want to upgrade "visual-studio-code", [p]in it to exclude it from updates or [q]uit [y/p/q/N]? N
+
+==> Upgrading 1 app
+
+==> Downloading https://releases.mozilla.org/pub/firefox/releases/121.0/...
+######################################################################## 100.0%
+==> Upgrading App 'Firefox.app'
+firefox was successfully upgraded!
+```
+
+In this session:
+- `firefox` was upgraded.
+- `rectangle` was pinned — it will not appear in future runs until unpinned with `brew cu unpin rectangle`.
+- `visual-studio-code` was skipped for this run and will appear again next time.

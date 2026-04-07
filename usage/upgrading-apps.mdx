@@ -1,0 +1,150 @@
+---
+title: "Upgrading apps"
+description: "Run brew cu to upgrade all outdated casks at once, or target specific apps with flags that control what gets upgraded and how."
+---
+
+Running `brew cu` without any arguments upgrades every outdated app you have installed through Homebrew Cask. Apps that are pinned or have auto-update enabled are excluded by default.
+
+## The upgrade flow
+
+<Steps>
+  <Step title="brew update runs automatically">
+    Before checking versions, `brew cu` runs `brew update` to pull the latest cask definitions from Homebrew's tap repositories. This ensures version comparisons are made against the most recent available releases.
+
+    To skip this step, pass `--no-brew-update`:
+
+    ```bash
+    brew cu --no-brew-update
+    ```
+
+    <Tip>
+      Use `--no-brew-update` when you have already run `brew update` recently, or when you are on a slow connection and want to avoid the extra network round-trip.
+    </Tip>
+  </Step>
+
+  <Step title="Outdated apps are listed">
+    `brew cu` scans your installed casks, compares versions, and prints a table of results:
+
+    ```
+    ==> Finding outdated apps
+
+    Cask                        Current          Latest           Result
+    -------------------------   --------------   --------------   --------
+    firefox                     120.0            121.0            outdated
+    visual-studio-code          1.84.2           1.85.1           outdated
+    spotify                     1.2.25.1011      1.2.26.1187      PASS
+    rectangle                   0.64             0.65             outdated
+
+    ==> Found outdated apps
+    ```
+
+    Apps showing `PASS` are skipped because they have auto-update enabled. See [Apps with auto-update](#apps-with-auto-update) below.
+  </Step>
+
+  <Step title="You are prompted to confirm">
+    After listing outdated apps, `brew cu` prompts:
+
+    ```
+    Do you want to upgrade 3 apps or enter [i]nteractive mode [y/i/N]?
+    ```
+
+    | Input | Action |
+    |-------|--------|
+    | `y` | Upgrade all listed apps immediately |
+    | `i` | Enter interactive mode — confirm each app one by one |
+    | `N` (or any other key) | Cancel without upgrading anything |
+  </Step>
+
+  <Step title="Apps are upgraded">
+    `brew cu` fetches all casks in parallel, then reinstalls each one individually. If any installation fails, the others continue and a summary of failures is printed at the end. The process exits with a non-zero code if any app failed.
+  </Step>
+</Steps>
+
+## Upgrading a specific app
+
+Pass a cask name to limit the run to that app only:
+
+```bash
+brew cu firefox
+```
+
+You can also pass multiple cask names:
+
+```bash
+brew cu firefox chromium
+```
+
+For pattern-based targeting of multiple apps, see [Glob patterns](/usage/glob-patterns).
+
+## Flags
+
+### Skip the confirmation prompt
+
+Pass `-y` or `--yes` to upgrade all outdated apps without waiting for input. Useful in scripts or scheduled tasks:
+
+```bash
+brew cu -y
+```
+
+### Include apps marked as "latest"
+
+Some casks use `latest` as their version because the upstream project does not publish versioned releases. By default these are skipped. Pass `-f` or `--force` to reinstall them regardless:
+
+```bash
+brew cu -f
+```
+
+### Include auto-update apps
+
+Apps that manage their own updates are shown as `PASS` and excluded by default. Pass `-a` or `--all` to include them:
+
+```bash
+brew cu -a
+```
+
+<Note>
+  You can combine flags. For example, `brew cu -a -f -y` includes auto-update apps and latest-versioned apps, and upgrades them all without prompting.
+</Note>
+
+### Clean up after upgrading
+
+Pass `--cleanup` to run `brew cleanup` after all upgrades complete. This removes cached downloads and old versions from the Homebrew cache:
+
+```bash
+brew cu --cleanup
+```
+
+<Warning>
+  Cleanup is skipped automatically in interactive mode because you may choose not to upgrade every app in the list. Only apps that were actually upgraded are cleaned up.
+</Warning>
+
+### Check for outdated apps without upgrading
+
+Pass `--report-only` to scan for outdated apps and print the results without upgrading anything. The process exits with the number of outdated apps as its exit code:
+
+```bash
+brew cu --report-only
+echo "Exit code: $?"  # equals the number of outdated apps found
+```
+
+<Tip>
+  `--report-only` is useful in CI pipelines or monitoring scripts where you want to detect outdated apps programmatically without triggering any installations.
+</Tip>
+
+## Apps with auto-update
+
+Many macOS applications — such as Chrome, Slack, and Zoom — include their own built-in updaters. When these apps update themselves, they change the binary on disk but do not update the version that Homebrew Cask tracks.
+
+This creates a mismatch: Homebrew Cask still records the version it originally installed, while the app is already running a newer release. `brew cu` detects this situation and shows these apps as `PASS` to avoid unnecessary reinstalls.
+
+<Note>
+  If you update an app through its built-in updater, that change is not reflected in `brew cu`. The Homebrew-tracked version only updates when the app is upgraded through `brew cu --all` (or `brew cu -a`).
+</Note>
+
+If you want Homebrew to track the current installed version of auto-updating apps, run:
+
+```bash
+brew cu -a
+```
+
+This reinstalls the latest version through Homebrew, bringing the tracked version back in sync.

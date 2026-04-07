@@ -1,0 +1,161 @@
+---
+title: "Troubleshooting"
+description: "Common issues and how to resolve them with brew-cask-upgrade."
+---
+
+If you run into a problem that is not covered here, [open an issue on GitHub](https://github.com/buo/homebrew-cask-upgrade/issues).
+
+<AccordionGroup>
+  <Accordion title="App not showing as outdated">
+    There are three common reasons an installed app does not appear in the outdated list:
+
+    **The app has auto-update enabled**
+
+    Apps with built-in auto-update show a `PASS` result and are excluded by default. Pass `-a` or `--all` to include them:
+
+    ```bash
+    brew cu --all
+    ```
+
+    **The app is pinned**
+
+    Pinned casks are never upgraded until unpinned. To unpin a cask:
+
+    ```bash
+    brew cu unpin CASK
+    ```
+
+    Replace `CASK` with the cask token (e.g., `brew cu unpin firefox`).
+
+    **The app is marked as `latest`**
+
+    Some casks use `latest` as their version and cannot be compared. Pass `-f` or `--force` to force a reinstall regardless:
+
+    ```bash
+    brew cu --force
+    ```
+  </Accordion>
+
+  <Accordion title="Glob pattern not working">
+    If your shell expands the glob pattern before `brew cu` sees it, the command will fail or match the wrong casks.
+
+    Always quote or escape glob patterns:
+
+    ```bash
+    # Quoted (recommended)
+    brew cu 'firefox*'
+
+    # Escaped
+    brew cu firefox\*
+
+    # zsh: disable glob expansion for a single command
+    noglob brew cu firefox*
+    ```
+
+    Unquoted patterns like `brew cu firefox*` are expanded by the shell first and will not work as intended.
+
+    `brew cu` supports the following glob characters:
+
+    | Pattern | Matches |
+    |---------|---------|
+    | `*` | Any sequence of characters |
+    | `?` | Any single character |
+    | `[abc]` | Any one character listed in the brackets |
+  </Accordion>
+
+  <Accordion title="--include-mas error: mas not found">
+    The `--include-mas` flag requires the `mas` CLI tool to be installed. If you see an error when using it, install `mas` first:
+
+    ```bash
+    brew install mas
+    ```
+
+    Then retry:
+
+    ```bash
+    brew cu --include-mas
+    ```
+
+    <Warning>
+      `--include-mas` is an experimental feature. Mac App Store upgrade behavior is not guaranteed.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="brew cu: command not found">
+    The `buo/cask-upgrade` tap may not be installed. Add it and verify:
+
+    ```bash
+    brew tap buo/cask-upgrade
+    ```
+
+    Confirm the tap is active:
+
+    ```bash
+    brew tap
+    ```
+
+    The output should include `buo/cask-upgrade`. Once the tap is present, `brew cu` will be available as an external command.
+  </Accordion>
+
+  <Accordion title="Upgrade failed">
+    `brew cu` exits with code `1` if one or more installations fail, and prints the names of the failed casks.
+
+    **Get more output with `--verbose`**
+
+    ```bash
+    brew cu --verbose
+    ```
+
+    This shows each upgrade command as it runs and surfaces output that is otherwise suppressed.
+
+    **Get debug-level output with `--debug`**
+
+    ```bash
+    brew cu --debug
+    ```
+
+    Enables debug statements and implies `--verbose`, giving maximum output from the upgrade run.
+
+    **Try upgrading the failing cask directly**
+
+    Isolate the problem by upgrading only the failing cask:
+
+    ```bash
+    brew reinstall --cask CASK --force --verbose
+    ```
+
+    If this also fails, the issue is likely with the cask definition itself. Search for or open an issue in the [homebrew-cask](https://github.com/Homebrew/homebrew-cask/issues) repository.
+  </Accordion>
+
+  <Accordion title="Before reporting a bug">
+    Run through these steps before opening an issue. Most problems are resolved by ensuring Homebrew itself is up to date.
+
+    <Steps>
+      <Step title="Update Homebrew (twice)">
+        ```bash
+        brew update && brew update
+        ```
+
+        Running `brew update` twice ensures all taps and formula definitions are fully synced.
+      </Step>
+
+      <Step title="Run brew doctor and fix all warnings">
+        ```bash
+        brew doctor
+        ```
+
+        Address every warning that `brew doctor` reports before proceeding.
+      </Step>
+
+      <Step title="Run brew cu">
+        ```bash
+        brew cu
+        ```
+      </Step>
+
+      <Step title="Open an issue if the problem persists">
+        If the problem still occurs after the steps above, [create a new issue](https://github.com/buo/homebrew-cask-upgrade/issues/new) with details about your environment and the exact error output.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>

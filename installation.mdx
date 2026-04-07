@@ -1,0 +1,59 @@
+---
+title: "Installation"
+description: "Install brew-cask-upgrade by tapping the buo/cask-upgrade repository. The tap makes brew cu available as a standard Homebrew command."
+---
+
+<Note>
+  Homebrew must already be installed and working before you tap this repository. If you haven't installed Homebrew yet, follow the instructions at [brew.sh](https://brew.sh) first.
+</Note>
+
+<Steps>
+  <Step title="Install">
+    Tap the `buo/cask-upgrade` repository to install `brew cu`:
+
+    ```bash
+    brew tap buo/cask-upgrade
+    ```
+
+    Homebrew clones the tap repository and makes the `brew cu` command available immediately. No separate install step is required.
+  </Step>
+
+  <Step title="Verify installation">
+    Run `brew tap` and confirm `buo/cask-upgrade` appears in the output:
+
+    ```bash
+    brew tap
+    ```
+
+    Expected output includes the new tap alongside your existing ones:
+
+    ```
+    buo/cask-upgrade
+    homebrew/bundle
+    homebrew/cask
+    homebrew/core
+    ```
+
+    If `buo/cask-upgrade` is listed, the installation was successful.
+  </Step>
+
+  <Step title="Get help">
+    Display the full usage guide for `brew cu` directly in your terminal:
+
+    ```bash
+    brew help cu
+    ```
+
+    This prints all available commands, options, and examples. You can run this any time you need a quick reference without leaving your terminal.
+  </Step>
+</Steps>
+
+## Uninstall
+
+To remove `brew cu`, untap the repository:
+
+```bash
+brew untap buo/cask-upgrade
+```
+
+This removes the tap and the `brew cu` command. Any apps you installed or upgraded through `brew cu` remain installed — untapping only removes the tool itself.

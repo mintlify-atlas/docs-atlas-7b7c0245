@@ -1,0 +1,110 @@
+---
+title: "Glob patterns"
+description: "Use shell glob patterns to target multiple casks by name in a single brew cu command."
+---
+
+Instead of listing individual cask names, you can pass a glob pattern and `brew cu` will upgrade every installed cask whose name matches it. Patterns are matched using Ruby's `File.fnmatch` with extended glob support (`File::FNM_EXTGLOB`).
+
+<Warning>
+  Always quote or escape glob patterns. If you pass an unquoted pattern, your shell expands it against the current directory before `brew cu` ever sees it. The command then receives a list of file names instead of cask names, and will report that no matching casks are installed.
+
+  ```bash
+  # Correct — shell passes the literal pattern to brew cu
+  brew cu 'firefox*'
+
+  # Correct — backslash escapes the glob character
+  brew cu firefox\*
+
+  # Correct — zsh noglob suppresses expansion
+  noglob brew cu firefox*
+
+  # Incorrect — shell expands firefox* against the current directory first
+  brew cu firefox*
+  ```
+</Warning>
+
+## Supported patterns
+
+### `*` — any characters
+
+Matches zero or more characters in a cask name.
+
+```bash
+brew cu 'flash-*'
+```
+
+Upgrades all installed casks whose names start with `flash-`, such as `flash-player` or `flash-npapi`.
+
+```bash
+brew cu 'adobe-*'
+```
+
+Upgrades every Adobe cask you have installed: `adobe-acrobat-reader`, `adobe-creative-cloud`, and so on.
+
+### `?` — single character
+
+Matches exactly one character.
+
+```bash
+brew cu 'app?'
+```
+
+Matches `app1`, `app2`, `appX` — any cask whose name is `app` followed by exactly one character.
+
+### `[abc]` — character class
+
+Matches any single character listed inside the brackets.
+
+```bash
+brew cu 'app[123]'
+```
+
+Matches `app1`, `app2`, or `app3` — but not `app4` or `app10`.
+
+## Multiple cask arguments
+
+You can combine explicit cask names and patterns in the same command. `brew cu` upgrades any installed cask that matches at least one of the arguments:
+
+```bash
+brew cu firefox chromium
+```
+
+```bash
+brew cu firefox 'adobe-*'
+```
+
+## Pattern examples
+
+<CodeGroup>
+
+```bash Upgrade all flash casks
+brew cu 'flash-*'
+```
+
+```bash Upgrade all Adobe casks
+brew cu 'adobe-*'
+```
+
+```bash Upgrade casks matching a character class
+brew cu 'app[123]'
+```
+
+```bash Combine a name and a pattern
+brew cu firefox 'google-chrome*'
+```
+
+</CodeGroup>
+
+## When no casks match
+
+If the pattern does not match any installed cask, `brew cu` exits with an error:
+
+```
+Error: No Cask matching "flash-*" is installed.
+```
+
+For a non-pattern argument, the error is more specific:
+
+```
+Error: Cask "firefox" is not installed.
+```

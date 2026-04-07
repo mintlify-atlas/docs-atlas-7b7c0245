@@ -1,0 +1,85 @@
+---
+title: "Introduction"
+description: "brew-cask-upgrade is an external Homebrew command that replaces native brew upgrade --cask with interactive upgrades, version pinning, and more control over your installed apps."
+---
+
+`brew-cask-upgrade` (`brew cu`) is a command-line tool for upgrading every outdated app installed by [Homebrew Cask](https://github.com/Homebrew/homebrew-cask). It replaces the native `brew upgrade --cask` command with a smarter upgrade experience: an interactive interface, version pinning, glob pattern targeting, and awareness of apps that self-update.
+
+## Why brew-cask-upgrade exists
+
+Homebrew Cask manages the installation of macOS GUI applications and large binaries. Its built-in `brew upgrade --cask` upgrades everything at once, with no prompting and no way to exclude specific apps.
+
+`brew-cask-upgrade` fills that gap. It shows you a table of outdated apps before doing anything, lets you confirm or skip each one, and gives you tools to permanently exclude apps you don't want auto-upgraded. It is designed for users who want upgrade control without giving up the convenience of Homebrew.
+
+## How it relates to Homebrew Cask
+
+`brew-cask-upgrade` is an **external Homebrew command** — a plugin that Homebrew loads when you tap the `buo/cask-upgrade` repository. Once tapped, it is available as `brew cu` alongside your existing Homebrew commands. It reads from and writes to the same Cask installation that Homebrew manages; it does not maintain a separate package database.
+
+Because it is external, it must be installed separately:
+
+```bash
+brew tap buo/cask-upgrade
+```
+
+After that, `brew cu` is available system-wide. See [Installation](/installation) for full setup steps.
+
+## Key capabilities
+
+<CardGroup cols={2}>
+  <Card title="Outdated app detection" icon="magnifying-glass">
+    Runs `brew update` then scans your installed casks, showing current and available versions in a clear table before touching anything.
+  </Card>
+  <Card title="Interactive mode" icon="computer-mouse">
+    Step through each outdated app one by one. For every app you can upgrade (`y`), skip (`N`), or pin the current version (`p`).
+  </Card>
+  <Card title="Version pinning" icon="lock">
+    Pin specific apps so `brew cu` never upgrades them. Unpin when ready. Export and import your pin list across machines.
+  </Card>
+  <Card title="Glob pattern support" icon="asterisk">
+    Target a subset of apps using shell glob patterns: `brew cu 'adobe-*'` upgrades every cask whose name starts with `adobe-`.
+  </Card>
+  <Card title="Auto-update awareness" icon="rotate">
+    Apps that self-update (e.g. Chrome, Slack) are skipped by default and shown as `PASS`. Pass `--all` to include them anyway.
+  </Card>
+  <Card title="Mac App Store integration" icon="apple">
+    Optionally manage Mac App Store upgrades in the same run using `--include-mas` and the [`mas-cli`](https://github.com/mas-cli/mas) tool. This feature is experimental.
+  </Card>
+</CardGroup>
+
+## The brew cu command
+
+`brew cu` is the entry point for everything in this tool. The full syntax is:
+
+```bash
+brew cu [command] [CASK] [options]
+```
+
+The default command (`run`) checks for outdated casks and starts the upgrade flow. Additional subcommands manage version pinning:
+
+| Command | Description |
+|---------|-------------|
+| `brew cu` | Upgrade all outdated casks (prompts before upgrading) |
+| `brew cu CASK` | Upgrade a specific cask by name or glob pattern |
+| `brew cu pin CASK` | Pin a cask at its current version |
+| `brew cu unpin CASK` | Remove a pin from a cask |
+| `brew cu pinned` | List all currently pinned casks |
+| `brew cu livecheck` | Run `brew livecheck` on all installed casks |
+
+Run `brew help cu` at any time to display the full usage guide in your terminal.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Tap the repository and verify brew cu is ready to use.
+  </Card>
+  <Card title="Quick start" icon="rocket" href="/quickstart">
+    Run your first upgrade in under a minute.
+  </Card>
+  <Card title="Options reference" icon="sliders" href="/configuration/options-reference">
+    Every flag and option explained.
+  </Card>
+  <Card title="Version pinning" icon="thumbtack" href="/pinning/overview">
+    Lock specific apps to prevent unwanted upgrades.
+  </Card>
+</CardGroup>

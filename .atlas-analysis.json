@@ -1,0 +1,71 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "brew-cask-upgrade",
+  "projectDescription": "A command-line tool for upgrading every outdated app installed by Homebrew Cask, with interactive mode, version pinning, and Mac App Store support.",
+  "theme": "palm",
+  "primaryColor": "#dcbc88",
+  "lightColor": "#735325",
+  "darkColor": "#393838",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "Usage",
+            "pages": ["usage/upgrading-apps", "usage/interactive-mode", "usage/glob-patterns"]
+          },
+          {
+            "group": "Version Pinning",
+            "pages": ["pinning/overview", "pinning/export-import"]
+          },
+          {
+            "group": "Configuration & Options",
+            "pages": ["configuration/options-reference", "configuration/mac-app-store"]
+          },
+          {
+            "group": "Contributing",
+            "pages": ["contributing/troubleshooting", "contributing/development"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Upgrades all outdated Homebrew Cask apps in one command",
+    "Interactive mode for per-cask confirmation before upgrading",
+    "Version pinning to exclude specific apps from upgrades",
+    "Glob pattern support for upgrading multiple matching casks",
+    "Mac App Store app integration via mas-cli (experimental)",
+    "Auto-update detection — skips apps that manage their own updates",
+    "Export/import pinned app configuration for backups",
+    "Report-only mode to check for outdated apps without upgrading"
+  ],
+  "publicApiSurface": [
+    "brew cu",
+    "brew cu [CASK]",
+    "brew cu 'glob-pattern*'",
+    "brew cu pin CASK",
+    "brew cu unpin CASK",
+    "brew cu pinned",
+    "brew cu pinned --export FILENAME",
+    "brew cu pinned --load FILENAME",
+    "brew cu livecheck",
+    "--all / -a",
+    "--force / -f",
+    "--yes / -y",
+    "--interactive / -i",
+    "--quiet / -q",
+    "--verbose / -v",
+    "--cleanup",
+    "--no-brew-update",
+    "--no-quarantine",
+    "--include-mas",
+    "--report-only",
+    "--debug"
+  ]
+}

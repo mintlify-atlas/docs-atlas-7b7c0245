@@ -1,0 +1,109 @@
+---
+title: "Version pinning"
+description: "Prevent specific apps from being upgraded by brew cu until you explicitly unpin them."
+---
+
+Pinning lets you hold an app at its current version. A pinned app is skipped every time you run `brew cu` — it will not appear as a candidate for upgrade until you unpin it.
+
+<Warning>
+  Pinning through `brew cu` only affects `brew cu`. It does **not** prevent `brew upgrade --cask` from upgrading pinned apps. If you run `brew upgrade --cask`, pinned apps will be upgraded regardless.
+</Warning>
+
+## Pinning an app
+
+```bash
+brew cu pin <cask>
+```
+
+When the pin is recorded, `brew cu` confirms it:
+
+```
+Pinned: firefox in version 121.0
+```
+
+If the app is already pinned, you will see:
+
+```
+Already pinned: firefox
+```
+
+## Unpinning an app
+
+```bash
+brew cu unpin <cask>
+```
+
+Output:
+
+```
+Unpinned: firefox
+```
+
+Once unpinned, the app is included in future `brew cu` runs again.
+
+## Listing pinned apps
+
+```bash
+brew cu pinned
+```
+
+This prints a table of every currently pinned cask and its pinned version:
+
+```
+==> Pinned apps
+
+Cask                   Version
+--------------------   ---------
+firefox                121.0
+rectangle              0.65
+```
+
+If no apps are pinned, `brew cu pinned` produces no output.
+
+## How pinning affects an upgrade run
+
+When you run `brew cu`, pinned apps are shown in the results table with a `pinned` status and are excluded from the upgrade queue:
+
+```
+Cask                        Current          Latest           Result
+-------------------------   --------------   --------------   --------
+firefox                     121.0            122.0            pinned
+visual-studio-code          1.84.2           1.85.1           outdated
+rectangle                   0.65             0.65             up-to-date
+```
+
+Only apps with an `outdated` result are upgraded. Apps marked `pinned` are listed for visibility but never touched.
+
+## Pinning during interactive mode
+
+<Steps>
+  <Step title="Run brew cu in interactive mode">
+    Start an interactive upgrade session:
+
+    ```bash
+    brew cu --interactive
+    ```
+
+    `brew cu` scans for outdated apps and then steps through each one.
+  </Step>
+
+  <Step title="Press p when prompted">
+    When `brew cu` asks about an app you want to hold back, type `p` and press Enter:
+
+    ```
+    Do you want to upgrade "firefox", [p]in it to exclude it from updates or [q]uit [y/p/q/N]? p
+    ```
+
+    `brew cu` records the pin immediately and moves on to the next app.
+  </Step>
+
+  <Step title="Confirm the pin later">
+    After the session, verify the app is pinned:
+
+    ```bash
+    brew cu pinned
+    ```
+  </Step>
+</Steps>
+
+To unpin later, run `brew cu unpin <cask>` from the command line.

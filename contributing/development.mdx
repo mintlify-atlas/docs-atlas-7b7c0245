@@ -1,0 +1,105 @@
+---
+title: "Contributing"
+description: "How to report bugs, propose features, and understand the project structure."
+---
+
+Contributions are welcome. The sections below explain how to report bugs, propose features, and orient yourself in the codebase.
+
+## Reporting a bug
+
+Before opening an issue, run through the following steps. Most problems are caused by a stale Homebrew installation.
+
+<Steps>
+  <Step title="Update Homebrew (twice)">
+    ```bash
+    brew update && brew update
+    ```
+  </Step>
+
+  <Step title="Fix all warnings">
+    ```bash
+    brew doctor
+    ```
+
+    Resolve every warning that `brew doctor` reports before continuing.
+  </Step>
+
+  <Step title="Run brew cu">
+    ```bash
+    brew cu
+    ```
+  </Step>
+
+  <Step title="Open an issue if the problem persists">
+    If the problem still occurs, [create an issue](https://github.com/buo/homebrew-cask-upgrade/issues/new) and include:
+
+    - The full command you ran
+    - The complete output (use `--verbose` or `--debug` to capture more detail)
+    - Your macOS version and the output of `brew --version`
+  </Step>
+</Steps>
+
+## Proposing a feature
+
+Open a pull request with your change. Describe what the feature does and why it is useful. There is no separate proposal step — the pull request is the proposal.
+
+## Project structure
+
+The repository is organized as a standard Homebrew external command. Homebrew discovers and loads `cmd/brew-cu.rb` automatically when the tap is installed.
+
+```
+homebrew-cask-upgrade/
+├── cmd/
+│   └── brew-cu.rb              # Entry point — loaded by Homebrew as an external command
+├── lib/
+│   ├── bcu.rb                  # Main module: parses args, resolves and dispatches commands
+│   ├── bcu/
+│   │   ├── options.rb          # Option parsing with OptionParser
+│   │   ├── command/
+│   │   │   ├── command.rb      # Abstract base class for all commands
+│   │   │   ├── upgrade.rb      # Default command: finds and upgrades outdated casks
+│   │   │   ├── pin_add.rb      # `brew cu pin` — pin a cask at its current version
+│   │   │   ├── pin_remove.rb   # `brew cu unpin` — remove a pin
+│   │   │   ├── pin_list.rb     # `brew cu pinned` — list all pinned casks
+│   │   │   ├── pin_export.rb   # `brew cu pinned --export` — export pins to a file
+│   │   │   ├── pin_load.rb     # `brew cu pinned --load` — import pins from a file
+│   │   │   ├── livecheck.rb    # `brew cu livecheck` — livecheck integration
+│   │   │   └── all.rb          # Requires all command files
+│   │   └── module/
+│   │       └── pin.rb          # Pin file management (read, write, persistence)
+│   └── extend/
+│       ├── cask.rb             # Extensions to Homebrew's Cask class
+│       ├── formatter.rb        # Extensions to Homebrew's Formatter class
+│       └── version.rb          # Extensions to Homebrew's Version class
+└── brew-cask-upgrade.gemspec   # Gem specification (name: brew-cask-upgrade, version: 2.0.2)
+```
+
+### Entry point and command dispatch
+
+`cmd/brew-cu.rb` is loaded by Homebrew when you run `brew cu`. It requires `lib/bcu.rb`, which calls `Bcu.process(args)`.
+
+`Bcu.process` parses arguments via `Bcu::Options` and then calls `Bcu.resolve_command` to select the right command object based on the subcommand string (`"pin"`, `"unpin"`, `"pinned"`, etc.). If no subcommand is given, it defaults to `Bcu::Upgrade`.
+
+Each command is a class under `Bcu::Command` that implements a `process(args, options)` method.
+
+### Pin management
+
+Pin state is stored on disk by `lib/bcu/module/pin.rb`. The `brew cu pin` and `brew cu unpin` commands call into this module to read and write the pin file. Pinned casks are excluded in `upgrade.rb` during the `find_outdated_apps` pass.
+
+### Homebrew extensions
+
+The files in `lib/extend/` monkey-patch classes from Homebrew's own library:
+
+- `extend/cask.rb` — adds helpers used when querying installed casks
+- `extend/formatter.rb` — adds the table-printing methods used for output
+- `extend/version.rb` — adds version comparison helpers
+
+### Gem metadata
+
+| Field | Value |
+|-------|-------|
+| Gem name | `brew-cask-upgrade` |
+| Version | `2.0.2` |
+| License | MIT |
+| Homepage | [github.com/buo/homebrew-cask-upgrade](https://github.com/buo/homebrew-cask-upgrade) |
+| Required Ruby | >= 4.0.0 |

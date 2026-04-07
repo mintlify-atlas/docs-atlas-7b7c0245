@@ -1,0 +1,53 @@
+---
+title: "Mac App Store integration"
+description: "Use brew cu --include-mas to include Mac App Store apps in your upgrade runs alongside Homebrew Cask apps."
+---
+
+The `--include-mas` flag extends `brew cu` to check and upgrade Mac App Store applications in addition to Homebrew Cask apps. It uses [mas-cli](https://github.com/mas-cli/mas) to interact with the Mac App Store.
+
+<Warning>
+  This feature is experimental. It is not guaranteed to work reliably and may change in future releases. Use it at your own risk.
+</Warning>
+
+## Requirement: install mas
+
+`mas` must be installed before using `--include-mas`. If `mas` is not found, `brew cu` will print an error and exit immediately:
+
+```
+Error: In order to use --include-mas the mas-cli has to be installed.
+Please see the instructions here: https://github.com/mas-cli/mas
+```
+
+Install `mas` with Homebrew:
+
+```bash
+brew install mas
+```
+
+For other installation methods, see the [mas-cli repository](https://github.com/mas-cli/mas).
+
+## Usage
+
+Once `mas` is installed, pass `--include-mas` to any `brew cu` run:
+
+```bash
+brew cu --include-mas
+```
+
+You can combine it with other flags as usual:
+
+```bash
+brew cu --include-mas --yes
+brew cu --include-mas --quiet
+```
+
+When the flag is active, `brew cu` checks for outdated Mac App Store apps alongside your Homebrew Cask apps and upgrades them in the same run.
+
+## Limitations
+
+<Note>
+  Pinning is not supported for Mac App Store applications. If you attempt to pin a MAS app, `brew cu` will print: `Pinning is not yet supported for MAS applications.`
+</Note>
+
+- **No pinning support** — You cannot use `brew cu pin` or the interactive `p` option to hold back a MAS app version.
+- **Experimental reliability** — MAS app version detection and upgrade behavior depends on the Mac App Store and the `mas` tool, which are outside Homebrew's control. Results may be inconsistent.

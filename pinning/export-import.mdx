@@ -1,0 +1,106 @@
+---
+title: "Export & import pinned apps"
+description: "Back up your pinned app list to a file and restore it on the same or a different machine."
+---
+
+Exporting your pinned apps lets you back them up, share them across machines, or restore them after a reinstall. The list is stored as a plain text file with one cask name per line.
+
+<Note>
+  Versions are not included in the export. Because Homebrew Cask does not support installing a specific older version of a cask, only the cask names are saved. When you import the list, each app is pinned at whatever version is currently installed on that machine.
+</Note>
+
+## Exporting pinned apps
+
+```bash
+brew cu pinned --export <filename>
+```
+
+For example:
+
+```bash
+brew cu pinned --export pinned-backup.txt
+```
+
+Output:
+
+```
+Pins exported to pinned-backup.txt
+```
+
+The resulting file contains one cask name per line:
+
+```
+firefox
+rectangle
+visual-studio-code
+```
+
+## Importing pinned apps
+
+```bash
+brew cu pinned --load <filename>
+```
+
+For example:
+
+```bash
+brew cu pinned --load pinned-backup.txt
+```
+
+Output:
+
+```
+Pins loaded from pinned-backup.txt
+```
+
+<Warning>
+  Loading a file **replaces** your current pin list entirely. Any apps you had pinned before running `--load` will be unpinned unless they also appear in the file you are loading.
+</Warning>
+
+## Backup and restore workflow
+
+<Steps>
+  <Step title="Export your current pins">
+    On the source machine, export your pinned apps to a file:
+
+    ```bash
+    brew cu pinned --export pinned-backup.txt
+    ```
+
+    Verify the contents look correct before transferring:
+
+    ```bash
+    cat pinned-backup.txt
+    ```
+  </Step>
+
+  <Step title="Transfer the file to the new machine">
+    Copy `pinned-backup.txt` to your target machine using your preferred method — AirDrop, a shared drive, `scp`, or a cloud sync folder:
+
+    ```bash
+    scp pinned-backup.txt user@new-machine:~/pinned-backup.txt
+    ```
+  </Step>
+
+  <Step title="Install brew-cask-upgrade on the new machine">
+    If you have not already set up `brew cu` on the target machine, install it first:
+
+    ```bash
+    brew tap buo/cask-upgrade
+    ```
+  </Step>
+
+  <Step title="Load the pin list">
+    Import the file on the new machine:
+
+    ```bash
+    brew cu pinned --load ~/pinned-backup.txt
+    ```
+
+    Confirm the pins were applied:
+
+    ```bash
+    brew cu pinned
+    ```
+  </Step>
+</Steps>

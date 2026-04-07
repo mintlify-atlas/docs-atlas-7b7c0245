@@ -1,0 +1,205 @@
+---
+title: "Options reference"
+description: "Complete reference for every command and option available in brew cu."
+---
+
+```bash
+brew cu [command=run] [CASK] [options]
+```
+
+## Commands
+
+Commands are passed as the first argument to `brew cu`. If no command is specified, `run` is used by default.
+
+<ParamField path="run" type="command">
+  Default command — does not need to be specified. Scans all installed casks for outdated versions and upgrades them. Optionally accepts a `CASK` name or glob pattern to limit the upgrade to specific apps.
+
+  ```bash
+  brew cu
+  brew cu firefox
+  brew cu 'flash-*'
+  ```
+</ParamField>
+
+<ParamField path="pin CASK" type="command">
+  Pins the current installed version of `CASK`, preventing it from being upgraded by future `brew cu` runs. Use `unpin` to reverse this.
+
+  ```bash
+  brew cu pin firefox
+  ```
+</ParamField>
+
+<ParamField path="unpin CASK" type="command">
+  Unpins `CASK`, allowing it to be upgraded again by `brew cu`.
+
+  ```bash
+  brew cu unpin firefox
+  ```
+</ParamField>
+
+<ParamField path="pinned" type="command">
+  Lists all currently pinned casks and their pinned versions. Supports `--export` and `--load` sub-options (see [Pinned command options](#pinned-command-options) below).
+
+  ```bash
+  brew cu pinned
+  ```
+</ParamField>
+
+<ParamField path="livecheck" type="command">
+  Runs `brew livecheck` on all installed casks to check for version updates using Homebrew's livecheck mechanism.
+
+  ```bash
+  brew cu livecheck
+  ```
+</ParamField>
+
+## Options
+
+Options can be combined freely unless otherwise noted.
+
+<ParamField query="-a / --all" type="boolean" default="false">
+  Includes apps that have auto-update enabled in the upgrade run. By default, these apps are shown as `PASS` and skipped.
+
+  ```bash
+  brew cu --all
+  brew cu -a
+  ```
+</ParamField>
+
+<ParamField query="--cleanup" type="boolean" default="false">
+  Removes cached downloads and tracker symlinks after all upgrades complete.
+
+  ```bash
+  brew cu --cleanup
+  ```
+</ParamField>
+
+<ParamField query="-f / --force" type="boolean" default="false">
+  Includes casks versioned as `latest` and force-reinstalls them. By default, `latest`-versioned casks are skipped because their version cannot be compared.
+
+  ```bash
+  brew cu --force
+  brew cu -f
+  ```
+</ParamField>
+
+<ParamField query="--no-brew-update" type="boolean" default="false">
+  Prevents `brew cu` from running `brew update` before checking for outdated apps. Use this when you have already updated recently or want to skip the network round-trip.
+
+  ```bash
+  brew cu --no-brew-update
+  ```
+</ParamField>
+
+<ParamField query="-y / --yes" type="boolean" default="false">
+  Upgrades all outdated apps without prompting for confirmation. Useful in scripts and scheduled tasks.
+
+  ```bash
+  brew cu --yes
+  brew cu -y
+  ```
+</ParamField>
+
+<ParamField query="-i / --interactive" type="boolean" default="false">
+  Steps through each outdated app individually, asking whether to upgrade, pin, or skip it. See [Interactive mode](/usage/interactive-mode) for details.
+
+  ```bash
+  brew cu --interactive
+  brew cu -i
+  ```
+</ParamField>
+
+<ParamField query="-q / --quiet" type="boolean" default="false">
+  Suppresses informational output about installed apps and current options.
+
+  ```bash
+  brew cu --quiet
+  brew cu -q
+  ```
+</ParamField>
+
+<ParamField query="-v / --verbose" type="boolean" default="false">
+  Produces more detailed output during the upgrade run.
+
+  ```bash
+  brew cu --verbose
+  brew cu -v
+  ```
+</ParamField>
+
+<Note>
+  `--quiet` and `--verbose` cannot be used together. Passing both will cause `brew cu` to exit with an error: `--quiet and --verbose cannot be specified at the same time`.
+</Note>
+
+<ParamField query="--no-quarantine" type="boolean" default="false">
+  Passes the `--no-quarantine` flag to each `brew install` call. This bypasses macOS Gatekeeper quarantine for installed apps. See the Homebrew Cask documentation for more information.
+
+  ```bash
+  brew cu --no-quarantine
+  ```
+</ParamField>
+
+<ParamField query="--include-mas" type="boolean" default="false">
+  Includes Mac App Store applications in the upgrade check. Requires `mas` to be installed. This feature is experimental.
+
+  ```bash
+  brew cu --include-mas
+  ```
+
+  See [Mac App Store integration](/configuration/mac-app-store) for setup instructions and limitations.
+</ParamField>
+
+<ParamField query="--report-only" type="boolean" default="false">
+  Scans for outdated apps and prints the results without upgrading anything. Exits with the count of outdated apps as the exit code.
+
+  ```bash
+  brew cu --report-only
+  echo "Outdated: $?"
+  ```
+</ParamField>
+
+<ParamField query="--debug" type="boolean" default="false">
+  Outputs debug statements. Implies `--verbose`.
+
+  ```bash
+  brew cu --debug
+  ```
+</ParamField>
+
+## Deprecated options
+
+The following flags existed in older versions of `brew cu` but have been replaced by subcommands. They still work but print a deprecation warning. Use the subcommand forms instead.
+
+| Deprecated flag | Use instead |
+|-----------------|-------------|
+| `--pinned` | `brew cu pinned` |
+| `--pin CASK` | `brew cu pin CASK` |
+| `--unpin CASK` | `brew cu unpin CASK` |
+
+## Pinned command options
+
+The following options are only available when using the `pinned` command.
+
+<ParamField query="--export FILENAME" type="string">
+  Exports the current list of pinned casks to the specified file.
+
+  ```bash
+  brew cu pinned --export my-pinned-apps.txt
+  ```
+
+  <Note>
+    Pinned versions are not included in the export, because installing a specific historical version is not supported by Homebrew Cask.
+  </Note>
+</ParamField>
+
+<ParamField query="--load FILENAME" type="string">
+  Loads pinned casks from the specified file, replacing the current pinned list entirely.
+
+  ```bash
+  brew cu pinned --load my-pinned-apps.txt
+  ```
+
+  <Warning>
+    Loading a file replaces your current pinned list. Any apps currently pinned that are not in the file will be unpinned.
+  </Warning>
+</ParamField>

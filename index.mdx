@@ -1,97 +1,63 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "brew-cask-upgrade"
+description: "Upgrade every outdated app installed by Homebrew Cask — with interactive mode, version pinning, and glob pattern support."
 ---
 
-## Setting up
+`brew-cask-upgrade` (`brew cu`) is a command-line tool that replaces the native `brew upgrade --cask` command with a smarter, more interactive upgrade experience. It detects outdated Homebrew Cask apps, shows you what's available, and lets you upgrade them individually or all at once.
 
-Get your documentation site up and running in minutes.
-
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Add the tap and install brew cu in seconds
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Run your first upgrade in under a minute
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Command Options" icon="sliders" href="/configuration/options-reference">
+    Full reference for every flag and option
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Version Pinning" icon="thumbtack" href="/pinning/overview">
+    Lock specific apps to prevent unwanted upgrades
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What brew-cask-upgrade does
 
-Everything you need to create world-class documentation.
+<CardGroup cols={2}>
+  <Card title="Smart upgrade detection" icon="magnifying-glass">
+    Finds all outdated Homebrew Cask apps and shows their current and available versions before upgrading.
+  </Card>
+  <Card title="Interactive mode" icon="computer-mouse">
+    Step through each outdated app one by one — upgrade, skip, or pin each one individually.
+  </Card>
+  <Card title="Version pinning" icon="lock">
+    Exclude specific apps from upgrades until you're ready. Pin, unpin, and export your pin list.
+  </Card>
+  <Card title="Glob pattern support" icon="asterisk">
+    Upgrade a subset of apps matching a pattern, like `brew cu 'firefox*'` or `brew cu 'adobe-*'`.
+  </Card>
+  <Card title="Auto-update awareness" icon="rotate">
+    Skips apps that self-update by default. Use `--all` to include them when you want.
+  </Card>
+  <Card title="Mac App Store integration" icon="apple">
+    Optionally include Mac App Store apps via `mas-cli` with `--include-mas`.
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Get started
 
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Steps>
+  <Step title="Tap the repository">
+    ```bash
+    brew tap buo/cask-upgrade
+    ```
+  </Step>
+  <Step title="Run your first upgrade">
+    ```bash
+    brew cu
+    ```
+    This checks for updates, shows you what's outdated, and prompts you to upgrade.
+  </Step>
+  <Step title="Explore options">
+    Upgrade all apps including auto-updaters, use interactive mode, or pin specific apps. See the [options reference](/configuration/options-reference) for the full list.
+  </Step>
+</Steps>
